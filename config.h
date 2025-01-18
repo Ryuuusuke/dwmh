@@ -42,6 +42,7 @@ static const char *const autostart[] = {
  // "xwinwrap", "-g", "1920x1080", "-ni", "-s", "-nf", "-b", "-un", "-ov", "-fdt", "-argb", "--",  "mpv", "--wid=%WID", "--loop", "--no-audio", "--fs", "--panscan=1", "/home/ryusuke/Pictures/Wallpaper/pixel_sakura.gif", NULL,
   "picom", "-b", NULL, 
   "setxkbmap", "-option", "caps:escape", NULL, 
+  "/usr/lib/xfce-polkit/xfce-polkit", NULL,
   "/usr/local/bin/dwmblocks", NULL,
 	NULL /* terminate */
 };
@@ -71,6 +72,7 @@ static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen win
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
+ 	{ "><>",      NULL },    /* no layout function means floating behavior */
   { "[@]",      spiral },
   { "HHH",      grid }, 
   // { "[]=",      tile },    /* first entry is default */
@@ -84,7 +86,6 @@ static const Layout layouts[] = {
 	{ "---",      horizgrid },
 	{ ":::",      gaplessgrid },
 	{ "|M|",      centeredmaster },
-	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ NULL,       NULL },
 };
 
@@ -104,8 +105,8 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 
 /* Volume and Brightness */
 
-static const char *upvol[]      = { "/usr/bin/wpctl",   "set-volume", "-l", "1", "@DEFAULT_AUDIO_SINK@",      "5%+",      NULL };
-static const char *downvol[]    = { "/usr/bin/wpctl",   "set-volume", "@DEFAULT_AUDIO_SINK@",      "5%-",      NULL };
+static const char *upvol[]      = { "/usr/bin/sh", "-c", "/usr/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ ; pkill -RTMIN+10 dwmblocks", NULL };
+static const char *downvol[]    = { "/usr/bin/sh", "-c", "/usr/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ; pkill -RTMIN+10 dwmblocks",  NULL };
 static const char *mutevol[]    = { "/usr/bin/wpctl",   "set-mute",   "@DEFAULT_AUDIO_SINK@",      "toggle",   NULL };
 
 static const char *light_up[]   = { "/usr/bin/brightnessctl",   "s", "3+", NULL };
@@ -142,10 +143,10 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
   { MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_q,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_comma,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_comma,      setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_space,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_space,  setlayout,      {0} },
+//	{ MODKEY,                       XK_space,  setlayout,      {} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
